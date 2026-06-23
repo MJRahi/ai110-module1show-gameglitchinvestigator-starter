@@ -9,6 +9,7 @@ from logic_utils import (
     check_guess,
     get_range_for_difficulty,
     parse_guess,
+    proximity_label,
     update_score,
 )
 
@@ -102,11 +103,17 @@ if submit:
     ok, guess_int, err = parse_guess(raw_guess)
 
     if not ok:
-        st.session_state.history.append(raw_guess)
+        # SF4 (Enhanced UI): store a structured row so the session summary table
+        # can show invalid attempts too.
+        st.session_state.history.append({
+            "attempt": st.session_state.attempts,
+            "guess": raw_guess,
+            "result": "Invalid",
+            "hint": err,
+            "proximity": "—",
+        })
         st.error(err)
     else:
-        st.session_state.history.append(guess_int)
-
         secret = st.session_state.secret
 
         # FIX: check_guess now returns just the outcome string; the (now-correct)
@@ -114,8 +121,26 @@ if submit:
         outcome = check_guess(guess_int, secret)
         message = HINT_MESSAGES[outcome]
 
+        # SF4 (Enhanced UI): Hot/Cold proximity indicator for how close the guess is.
+        proximity = proximity_label(guess_int, secret, low, high)
+
+        st.session_state.history.append({
+            "attempt": st.session_state.attempts,
+            "guess": guess_int,
+            "result": outcome,
+            "hint": message,
+            "proximity": proximity,
+        })
+
         if show_hint:
-            st.warning(message)
+            # SF4 (Enhanced UI): color-code the hint by outcome.
+            if outcome == "Win":
+                st.success(message)
+            elif outcome == "Too High":
+                st.error(message)
+            else:
+                st.info(message)
+            st.write(f"**Proximity:** {proximity}")
 
         st.session_state.score = update_score(
             current_score=st.session_state.score,
@@ -138,6 +163,20 @@ if submit:
                     f"The secret was {st.session_state.secret}. "
                     f"Score: {st.session_state.score}"
                 )
+
+# SF4 (Enhanced UI): session summary table of every guess this game.
+if st.session_state.history:
+    st.subheader("📋 Session Summary")
+    st.table([
+        {
+            "Attempt": row["attempt"],
+            "Guess": row["guess"],
+            "Result": row["result"],
+            "Hint": row["hint"],
+            "Proximity": row["proximity"],
+        }
+        for row in st.session_state.history
+    ])
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")

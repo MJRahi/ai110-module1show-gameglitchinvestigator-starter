@@ -48,24 +48,30 @@ A sample game on Normal difficulty (secret = 50), following the fixed behavior e
 $ python3 -m pytest tests/ -v
 ============================= test session starts ==============================
 platform darwin -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0
-collected 10 items
+collected 12 items
 
-tests/test_game_logic.py::test_winning_guess PASSED                      [ 10%]
-tests/test_game_logic.py::test_guess_too_high PASSED                     [ 20%]
-tests/test_game_logic.py::test_guess_too_low PASSED                      [ 30%]
-tests/test_game_logic.py::test_too_high_hint_advises_going_lower PASSED  [ 40%]
-tests/test_game_logic.py::test_too_low_hint_advises_going_higher PASSED  [ 50%]
-tests/test_game_logic.py::test_parse_negative_number PASSED              [ 60%]
-tests/test_game_logic.py::test_parse_decimal_is_truncated PASSED         [ 70%]
-tests/test_game_logic.py::test_parse_very_large_number PASSED            [ 80%]
-tests/test_game_logic.py::test_parse_non_numeric_is_rejected PASSED      [ 90%]
-tests/test_game_logic.py::test_parse_empty_string_is_rejected PASSED     [100%]
+tests/test_game_logic.py::test_winning_guess PASSED                      [  8%]
+tests/test_game_logic.py::test_guess_too_high PASSED                     [ 16%]
+tests/test_game_logic.py::test_guess_too_low PASSED                      [ 25%]
+tests/test_game_logic.py::test_too_high_hint_advises_going_lower PASSED  [ 33%]
+tests/test_game_logic.py::test_too_low_hint_advises_going_higher PASSED  [ 41%]
+tests/test_game_logic.py::test_parse_negative_number PASSED              [ 50%]
+tests/test_game_logic.py::test_parse_decimal_is_truncated PASSED         [ 58%]
+tests/test_game_logic.py::test_parse_very_large_number PASSED            [ 66%]
+tests/test_game_logic.py::test_parse_non_numeric_is_rejected PASSED      [ 75%]
+tests/test_game_logic.py::test_parse_empty_string_is_rejected PASSED     [ 83%]
+tests/test_game_logic.py::test_proximity_bullseye PASSED                 [ 91%]
+tests/test_game_logic.py::test_proximity_far_guess_is_cold PASSED        [100%]
 
-============================== 10 passed in 0.02s ===============================
+============================== 12 passed in 0.02s ===============================
 ```
 
 ## 🚀 Stretch Features
 
 - [x] **Challenge 1 — Advanced Edge-Case Testing.** Added 5 edge-case pytest cases (negative numbers, decimals, very large values, non-numeric text, empty input) for `parse_guess`; all pass (see Test Results above). Prompts and reasoning are documented in [ai_interactions.md](ai_interactions.md) (SF7).
 - [x] **Challenge 3 — Professional Documentation & Linting.** Added docstrings to every function in `logic_utils.py` and ran `ruff` for PEP 8 compliance; fixed the import-ordering issues it flagged. Details in [ai_interactions.md](ai_interactions.md) (SF9).
-- [ ] [If you choose to complete Challenge 4, describe the Enhanced UI changes here — a screenshot is optional]
+- [x] **Challenge 4 — Enhanced Game UI.** Added structured, user-friendly output without changing the core game logic:
+  - **Hot/Cold proximity emojis** — a new `proximity_label(guess, secret, low, high)` helper in [logic_utils.py](logic_utils.py) reports how close each guess is (🎯 Bullseye → 🔥 Burning hot → ♨️ Hot → 🙂 Warm → ❄️ Cold → 🧊 Freezing), scaled to the difficulty's range. Shown after each guess in `app.py`.
+  - **Color-coded hints** — in the submit block of [app.py](app.py), the hint is rendered green on a win (`st.success`), red when too high (`st.error`), and blue when too low (`st.info`) instead of a single yellow warning.
+  - **Session summary table** — `app.py` now stores each attempt as a structured row and renders a `st.table` "📋 Session Summary" (Attempt, Guess, Result, Hint, Proximity) at the bottom of the page.
+  - Covered by two new tests (`test_proximity_bullseye`, `test_proximity_far_guess_is_cold`).

@@ -1,4 +1,4 @@
-from logic_utils import HINT_MESSAGES, check_guess, parse_guess
+from logic_utils import HINT_MESSAGES, check_guess, parse_guess, proximity_label
 
 
 def test_winning_guess():
@@ -54,3 +54,15 @@ def test_parse_empty_string_is_rejected():
     # An empty submission should prompt the user, not crash.
     ok, value, err = parse_guess("")
     assert ok is False and value is None and err == "Enter a guess."
+
+
+# --- Stretch Challenge 4: Enhanced UI proximity helper ---
+
+def test_proximity_bullseye():
+    # An exact guess should report a bullseye.
+    assert "Bullseye" in proximity_label(50, 50, 1, 100)
+
+def test_proximity_far_guess_is_cold():
+    # A guess at the opposite end of the range should be the coldest label.
+    label = proximity_label(1, 100, 1, 100)
+    assert "🧊" in label or "Freezing" in label

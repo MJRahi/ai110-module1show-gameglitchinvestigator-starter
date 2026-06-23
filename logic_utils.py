@@ -57,6 +57,28 @@ def check_guess(guess, secret):
     return "Too Low"
 
 
+def proximity_label(guess, secret, low, high):
+    """Return a playful Hot/Cold proximity hint for how close a guess is.
+
+    The distance is measured relative to the difficulty's range span, so the
+    scale stays meaningful for Easy, Normal, and Hard. This is presentation
+    only and does not affect the win/lose outcome from check_guess.
+    """
+    if guess == secret:
+        return "🎯 Bullseye!"
+    span = max(high - low, 1)
+    ratio = abs(guess - secret) / span
+    if ratio <= 0.05:
+        return "🔥 Burning hot"
+    if ratio <= 0.15:
+        return "♨️ Hot"
+    if ratio <= 0.35:
+        return "🙂 Warm"
+    if ratio <= 0.60:
+        return "❄️ Cold"
+    return "🧊 Freezing"
+
+
 # FIX: The original messages were backwards ("Too High" told the player to go
 # HIGHER). These are now correct: too high -> go lower, too low -> go higher.
 HINT_MESSAGES = {
