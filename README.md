@@ -25,7 +25,7 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [x] **Describe the game's purpose.** It is a Streamlit number-guessing game: the app picks a secret number within a range that depends on the chosen difficulty (Easy 1–20, Normal 1–100, Hard 1–50), and the player tries to guess it within a limited number of attempts, using "Too High / Too Low" hints and a running score.
+- [x] **Describe the game's purpose.** It is a Streamlit number-guessing game: the app picks a secret number within a range that depends on the chosen difficulty (Easy 1–20, Normal 1–100, Hard 1–200), and the player tries to guess it within a limited number of attempts, using "Too High / Too Low" hints and a running score.
 - [x] **Detail which bugs you found.** (1) The secret was converted to a string on even attempts, so guesses were compared int-vs-string and the secret seemed to "change" every Submit; (2) the Higher/Lower hint messages were backwards; (3) "New Game" only reset `attempts` and `secret`, leaving stale `score`, `status`, and `history`; (4) `attempts` started at `1`, making "Attempts left" off by one. Full reproduction steps are in [reflection.md](reflection.md).
 - [x] **Explain what fixes you applied.** Removed the string conversion so the secret stays an integer; corrected the hint mapping (`Too High → Go LOWER`, `Too Low → Go HIGHER`); made "New Game" reset score/status/history and regenerate the secret from the current difficulty range; initialized `attempts` to `0`; and refactored the core logic into `logic_utils.py` with passing pytest coverage.
 
